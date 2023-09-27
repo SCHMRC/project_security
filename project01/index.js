@@ -2,11 +2,17 @@ const express = require('express');
 const http = require('http');
 const Gpio = require('onoff').Gpio;
 const relayPin = new Gpio(14, 'out'); // Usa il pin GPIO 14 per il relè
+var cors = require('cors')
 const { promise } = require('./util')
 const { db } = require('./db/connector')
 const { createTableDB } = require('./db/ddl')
 
 const app = express();
+let corsOptions = {
+  origin: '*',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions))
 const server = http.createServer(app);
 const port = 3000;
 createTableDB(db())
