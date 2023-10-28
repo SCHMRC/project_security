@@ -15,10 +15,21 @@ function promise(relayPin,listClass,idCard){
           
         }
       })
+}
 
-
+function setRele(rele){
+  let currentState = rele.readSync();
+  let state;
+  if (currentState) {
+    rele.writeSync(0);
+    state = 'ON';
+  } else {
+    rele.writeSync(1);
+    state = 'OFF';
+  }
+  return state;
 }
 
 
 
-module.exports = {promise}
+module.exports = {promise, setRele}

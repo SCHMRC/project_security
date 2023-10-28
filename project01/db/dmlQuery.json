@@ -1,3 +1,42 @@
 {
-    INSERT
+    "CREATE" : {
+        "CLASSE":"INSERT INTO CLASSE(idClasse,livello,aula) VALUES(:idClasse,:livello,:aula)",
+        "BAGNO":"INSERT INTO BAGNO(idLocaleFK) VALUES(:idLocaleFK)",
+        "LOCALEBAGNO":"INSERT INTO LOCALEBAGNO(livello) VALUES (:livello)",
+        "USCITA":"INSERT INTO USCITA(idClasseFK,timerEnd,stato) VALUES(:idClasseFK,:timerEnd,:stato)",
+        "USCITA_BAGNO":"INSERT INTO USCITA(idClasseFK,timerEnd,stato,idLocaleFK) VALUES(:idClasseFK,:timerEnd,:stato,:idLocaleFK);"
+    },
+    "READ" : {
+        "ALLLOCALEBAGNO":"SELECT idLocale, livello, stato FROM LOCALEBAGNO",
+        "ONELOCALEBAGNO":"SELECT idLocale, livello, stato FROM LOCALEBAGNO WHERE idLocale = :idLocale",
+        "ALLBAGNO":"SELECT idBagno, stato FROM BAGNO WHERE idLocaleFK = :idLocaleFK",
+        "ALLCLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE",
+        "ONECLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE WHERE idClasse = :idClasse",
+        "ALLUSCITA":"SELECT idClasse, stato, idLocaleFK FROM USCITA",
+        "ONEUSCITA":"SELECT idClasse, stato, idLocaleFK FROM USCITA WHERE idClasse = :idClasse",
+        "ONEUSCITATIMESTAMP":"SELECT idClasse, timeStamp,stato, idLocaleFK FROM USCITA WHERE idClasse = :idClasse AND timeStamp = :timeStamp"
+        
+    },
+    "UPDATE" : {
+        "CLASSE":{
+            "PARAMETERS":"UPDATE CLASSE SET livello = :livello, aula = :aula WHERE idClasse = :idClasse ;",
+            "LIVELLO":"UPDATE CLASSE SET livello = :livello WHERE idClasse = :idClasse ;",
+            "AULA":"UPDATE CLASSE SET aula = :aula WHERE idClasse = :idClasse ;",
+            "STATO":"UPDATE CLASSE SET stato = :stato WHERE idClasse = :idClasse ;"
+        },
+        "LOCALEBAGNO": {
+            "STATO":"UPDATE LOCALEBAGNO SET stato = :stato WHERE idLocale = :idLocale ;",
+            "LIVELLO":"UPDATE LOCALEBAGNO SET livello = :livello WHERE idLocale = :idLocale ;"
+        },
+        "BAGNO": {
+            "STATO":"UPDATE LOCALEBAGNO SET stato = :stato WHERE idBagno = :idBagno ;"
+        },
+        "USCITA": {
+            "STATO_CORRIDOIO":"UPDATE USCITA SET stato = :stato WHERE idClasseFK = :idClasseFK AND timeStamp = :timeStamp ;",
+            "STATO_BAGNO": "UPDATE USCITA SET stato = :stato WHERE idClasseFK = :idClasseFK AND timeStamp = :timeStamp AND idLocaleFK = :idLocaleFK ;"
+        }
+    },
+    "DELETE" : {
+    
+    }
 }

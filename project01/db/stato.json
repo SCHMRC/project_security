@@ -1,0 +1,10 @@
+{
+    "STATO":{
+        "IN_ESECUZIONE_ANDATA_CORRIDOIO":"pending_gone_corridoio",
+        "FINE_ESECUZIONE_ANDATA_CORRIDOIO":"end_gone_corridoio",
+        "IN_ESECUZIONE_ANDATA_BAGNO":"pending_bagno",
+        "FINE_ESECUZIONE_ANDATA_BAGNO":"end_bagno",
+        "IN_ESECUZIONE_RITORNO_CORRIDOIO":"pending_return_corridoio",
+        "FINE_ESECUZIONE_RITORNO_CORRIDOIO":"end_return_corridoio"
+    }
+}
