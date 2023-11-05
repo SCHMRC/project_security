@@ -12,10 +12,11 @@
         "ALLBAGNO":"SELECT idBagno, stato FROM BAGNO WHERE idLocaleFK = :idLocaleFK",
         "ALLCLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE",
         "ONECLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE WHERE idClasse = :idClasse",
-        "ALLUSCITA":"SELECT idClasse, stato, idLocaleFK FROM USCITA",
-        "ONEUSCITA":"SELECT idClasse, stato, idLocaleFK FROM USCITA WHERE idClasse = :idClasse",
-        "ONEUSCITATIMESTAMP":"SELECT idClasse, timeStamp,stato, idLocaleFK FROM USCITA WHERE idClasse = :idClasse AND timeStamp = :timeStamp"
-        
+        "ALLUSCITA":"SELECT idClasseFK, stato, idLocaleFK FROM USCITA",
+        "ONEUSCITA":"SELECT idClasseFK, stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK",
+        "ONEUSCITASTATO":"SELECT idClasseFK, idLocaleFK, timeStamp FROM USCITA WHERE idClasseFK = :idClasseFK AND stato = :stato",
+        "ONEUSCITATIMESTAMP":"SELECT idClasseFK, timeStamp,stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK AND timeStamp LIKE :timestamp",
+        "SHOWSUMMARY": "SELECT BAGNO.idLocaleFK, L.livello, COUNT(BAGNO.idLocaleFK) AS 'bagni_totali', T.bagni_occupati FROM BAGNO LEFT OUTER JOIN (SELECT B.idLocaleFK, COUNT(idLocaleFK) AS 'bagni_occupati' FROM BAGNO AS B WHERE stato = 'BUSY' GROUP BY B.idLocaleFK)AS T ON BAGNO.idLocaleFK = T.idLocaleFK LEFT OUTER JOIN (SELECT idLocale, livello FROM LOCALEBAGNO)AS L ON L.idLocale = BAGNO.idLocaleFK GROUP BY BAGNO.idLocaleFK;"
     },
     "UPDATE" : {
         "CLASSE":{

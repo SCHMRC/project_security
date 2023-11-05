@@ -8,6 +8,10 @@ const { promise, setRele } = require('./util')
 const { db } = require('./db/connector')
 const { createTableDB } = require('./db/ddl')
 const router = require('./db/router')
+const router_classe = require('./router/router-classe')
+const router_bagno = require('./router/router-bagno')
+const router_locali = require('./router/router-locale-bagno')
+const router_uscite = require('./router/router-uscita')
 const bodyParser = require('body-parser')
 
 const app = express();
@@ -24,6 +28,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/handler',router);
+app.use('/classe', router_classe);
+app.use("/bagno", router_bagno);
+app.use("/locali", router_locali);
+app.use("/uscite", router_uscite);
 
 app.get('/receive-rfid', (req, res) => {
     // Ricevi i dati JSON dalla richiesta
