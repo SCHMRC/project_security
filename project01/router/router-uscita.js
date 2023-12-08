@@ -41,6 +41,29 @@ router.post('/classe', (req, res) => {
     
 })
 
+router.get('/last-exit-class/:idClasseFK', (req, res) => { 
+  let idClasseFK = req.params["idClasseFK"];
+  uscite.getUltimaUscitaClasse(idClasseFK).then(timestamp => { 
+    if (timestamp) { 
+      res.status(200).header({"content":"success"}).json(timestamp)
+    }
+  }).catch(err => { 
+
+  })
+})
+
+router.get("/end-exit-class/:idClasseFK", (req, res) => {
+  let idClasseFK = req.params["idClasseFK"];
+  uscite
+    .getEndUscitaClasseAndata(idClasseFK)
+    .then((timestamp) => {
+      if (timestamp) {
+        res.status(200).header({ content: "success" }).json(timestamp);
+      }
+    })
+    .catch((err) => {});
+});
+
 
 
 module.exports = router;

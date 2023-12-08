@@ -13,6 +13,7 @@ const router_bagno = require('./router/router-bagno')
 const router_locali = require('./router/router-locale-bagno')
 const router_uscite = require('./router/router-uscita')
 const bodyParser = require('body-parser')
+const { Server } = require("socket.io");
 
 const app = express();
 let corsOptions = {
@@ -26,6 +27,16 @@ createTableDB(db())
 // Middleware per estrarre i parametri comuni da ogni richiesta POST
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+const io = new Server(server, {
+  cors: corsOptions,
+}); //creo un'istanza di io contente un server di tipo http generato da node.
+
+// Passa l'istanza io al middleware
+app.use((req, res, next) => {
+  req.io = io; // Aggiunge l'istanza io all'oggetto request
+  app.locals.io = io; // Aggiunge l'istanza io all'oggetto app.locals
+  next();
+});
 
 app.use('/handler',router);
 app.use('/classe', router_classe);
@@ -38,15 +49,24 @@ app.get('/receive-rfid', (req, res) => {
     const dataReceived = req.query;
 
     // Fai qualcosa con i dati ricevuti (esempio: stampali sulla console)
-    console.log('Codice RFID ricevuto:', dataReceived.idClasseFK.length);
+    console.log('Codice RFID ricevuto:', dataReceived.idClasseFK);
     //dataReceived.rfid_code = dataReceived.rfid_code.trim();
     let listClass = ['2DT','3ET']
 
-    promise(relayPin,listClass,dataReceived.idClasseFK)
+    promise(relayPin,listClass,'3ET')
       .then((res)=>{
+        console.log('*******')
+        console.log(res)
+        console.log('*******')
         setTimeout(()=>{
-          (!res)? relayPin.writeSync(1) : null;
+          if(!res){
+            console.log('entrato')
+             relayPin.writeSync(1)
+          }
         },1000)
+      })
+      .then(()=>{
+        res.status(200).send('Dati RFID ricevuti con successo');
       })
       .catch((rej)=>{console.log(rej)})
     
@@ -60,7 +80,7 @@ app.get('/receive-rfid', (req, res) => {
 
 
     // Invia una risposta al client (Python)
-    res.status(200).send('Dati RFID ricevuti con successo');
+
 });
 
 app.get('/receive-rfid-a',(req,res)=>{

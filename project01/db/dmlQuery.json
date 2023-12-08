@@ -4,19 +4,21 @@
         "BAGNO":"INSERT INTO BAGNO(idLocaleFK) VALUES(:idLocaleFK)",
         "LOCALEBAGNO":"INSERT INTO LOCALEBAGNO(livello) VALUES (:livello)",
         "USCITA":"INSERT INTO USCITA(idClasseFK,timerEnd,stato) VALUES(:idClasseFK,:timerEnd,:stato)",
-        "USCITA_BAGNO":"INSERT INTO USCITA(idClasseFK,timerEnd,stato,idLocaleFK) VALUES(:idClasseFK,:timerEnd,:stato,:idLocaleFK);"
+        "USCITA_BAGNO":"INSERT INTO USCITA(idClasseFK,timeStamp,timerEnd,stato,idLocaleFK) VALUES(:idClasseFK,:timeStamp,:timerEnd,:stato,:idLocaleFK);"
     },
     "READ" : {
-        "ALLLOCALEBAGNO":"SELECT idLocale, livello, stato FROM LOCALEBAGNO",
-        "ONELOCALEBAGNO":"SELECT idLocale, livello, stato FROM LOCALEBAGNO WHERE idLocale = :idLocale",
-        "ALLBAGNO":"SELECT idBagno, stato FROM BAGNO WHERE idLocaleFK = :idLocaleFK",
-        "ALLCLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE",
-        "ONECLASSE":"SELECT idClasse, livello, aula, stato FROM CLASSE WHERE idClasse = :idClasse",
-        "ALLUSCITA":"SELECT idClasseFK, stato, idLocaleFK FROM USCITA",
-        "ONEUSCITA":"SELECT idClasseFK, stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK",
-        "ONEUSCITASTATO":"SELECT idClasseFK, idLocaleFK, timeStamp FROM USCITA WHERE idClasseFK = :idClasseFK AND stato = :stato",
-        "ONEUSCITATIMESTAMP":"SELECT idClasseFK, timeStamp,stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK AND timeStamp LIKE :timestamp",
-        "SHOWSUMMARY": "SELECT BAGNO.idLocaleFK, L.livello, COUNT(BAGNO.idLocaleFK) AS 'bagni_totali', T.bagni_occupati FROM BAGNO LEFT OUTER JOIN (SELECT B.idLocaleFK, COUNT(idLocaleFK) AS 'bagni_occupati' FROM BAGNO AS B WHERE stato = 'BUSY' GROUP BY B.idLocaleFK)AS T ON BAGNO.idLocaleFK = T.idLocaleFK LEFT OUTER JOIN (SELECT idLocale, livello FROM LOCALEBAGNO)AS L ON L.idLocale = BAGNO.idLocaleFK GROUP BY BAGNO.idLocaleFK;"
+      "ALLLOCALEBAGNO": "SELECT idLocale, livello, stato FROM LOCALEBAGNO",
+      "ONELOCALEBAGNO": "SELECT idLocale, livello, stato FROM LOCALEBAGNO WHERE idLocale = :idLocale",
+      "ALLBAGNO": "SELECT idBagno, stato FROM BAGNO WHERE idLocaleFK = :idLocaleFK",
+      "ALLCLASSE": "SELECT idClasse, livello, aula, stato FROM CLASSE",
+      "ONECLASSE": "SELECT idClasse, livello, aula, stato FROM CLASSE WHERE idClasse = :idClasse",
+      "ALLUSCITA": "SELECT idClasseFK, stato, idLocaleFK FROM USCITA",
+      "ONEUSCITA": "SELECT idClasseFK, stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK",
+      "ONEUSCITASTATO": "SELECT idClasseFK, idLocaleFK, timeStamp FROM USCITA WHERE idClasseFK = :idClasseFK AND stato = :stato",
+      "ONEUSCITATIMESTAMP": "SELECT idClasseFK, timeStamp,stato, idLocaleFK FROM USCITA WHERE idClasseFK = :idClasseFK AND timeStamp LIKE :timestamp",
+      "SHOWSUMMARY": "SELECT BAGNO.idLocaleFK, L.livello, COUNT(BAGNO.idLocaleFK) AS 'bagni_totali', T.bagni_occupati FROM BAGNO LEFT OUTER JOIN (SELECT B.idLocaleFK, COUNT(idLocaleFK) AS 'bagni_occupati' FROM BAGNO AS B WHERE stato = 'BUSY' GROUP BY B.idLocaleFK)AS T ON BAGNO.idLocaleFK = T.idLocaleFK LEFT OUTER JOIN (SELECT idLocale, livello FROM LOCALEBAGNO)AS L ON L.idLocale = BAGNO.idLocaleFK GROUP BY BAGNO.idLocaleFK;",
+      "LASTEXITFROMCLASS": "SELECT MAX(timeStamp) AS 'start_exit_from_class' FROM USCITA AS U WHERE  U.timerEnd = 0 AND U.idClasseFK = :idClasseFK AND U.stato = 'pending_gone_corridoio'",
+      "LASTENDEXITFROMCLASS": "SELECT MAX(timeStamp) AS 'end_exit_from_class' FROM USCITA AS U WHERE  U.timerEnd = 1 AND U.idClasseFK = :idClasseFK AND U.stato = 'end_gone_corridoio' AND timeStamp > (SELECT MAX(timeStamp) FROM USCITA AS U WHERE  U.timerEnd = 0 AND U.idClasseFK = :idClasseFK AND U.stato = 'pending_gone_corridoio')"
     },
     "UPDATE" : {
         "CLASSE":{

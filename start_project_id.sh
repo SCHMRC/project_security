@@ -10,7 +10,7 @@ trap 'terminate_children; exit 2' SIGINT
 
 # Avvia il server Node.js in /home/pi/project01
 cd /home/pi/project_security/project01
-node index.js &
+nodemon index.js &
 
 # Avvia lo script Python in /home/pi/project02
 cd /home/pi/project_security/project02

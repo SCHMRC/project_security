@@ -30,6 +30,7 @@ let createBagno  = async (idLocaleFK) => {
 }
 
 let createUscita  = async (idClasseFK,timerEnd,stato) => {
+  console.log(1234)
     return await new Promise((resolve, reject)=>{
         dataBaseConnection.prepare(query.CREATE.USCITA,[idClasseFK,timerEnd,stato])
             .run((err)=>{ (err)? reject(err) : resolve({"content":"success"}) } ) 
@@ -37,10 +38,18 @@ let createUscita  = async (idClasseFK,timerEnd,stato) => {
      
 }
 
-let createUscitaBagno  = async (idClasseFK,timerEnd,stato,idLocaleFK) => {
+
+let createUscitaBagno  = async (idClasseFK,timeStamp,timerEnd,stato,idLocaleFK) => {
     return await new Promise((resolve,reject)=>{
-        dataBaseConnection.prepare(query.CREATE.USCITA_BAGNO,[idClasseFK,timerEnd,stato,idLocaleFK])
-            .run((err)=>{ (err)? reject(err) : resolve({"content":"success"}) } ) 
+        dataBaseConnection.prepare(query.CREATE.USCITA_BAGNO,[idClasseFK,timeStamp,timerEnd,stato,idLocaleFK])
+            .run((err)=>{ 
+              if(err){
+                console.log(err)
+                reject(err)
+              }else{
+                resolve({"content":"success"}) 
+              }
+            } ) 
     })
 }
 
@@ -54,6 +63,36 @@ let getListClasse = async () => {
           })
     })
 
+}
+
+/*start tempo uscita dalla classe*/
+let getUltimaUscitaClasse = async (idClasseFK) => { 
+  return await new Promise((resolve, reject) => { 
+    dataBaseConnection.get(query.READ.LASTEXITFROMCLASS, [idClasseFK], (err, row) => { 
+      if (err) {
+        reject(err)
+      } else {
+        row != undefined
+          ? resolve({ content: "success", result: row })
+          : resolve({ content: "success", result: "no_match" });
+      }
+    })
+  })
+}
+
+/*end tempo uscita dalla classe*/
+let getEndUscitaClasseAndata = async (idClasseFK) => { 
+  return await new Promise((resolve, reject) => { 
+    dataBaseConnection.get(query.READ.LASTENDEXITFROMCLASS, [idClasseFK], (err, row) => { 
+      if (err) {
+        reject(err)
+      } else {
+        row != undefined
+          ? resolve({ content: "success", result: row })
+          : resolve({ content: "success", result: "no_match" });
+      }
+    })
+  })
 }
 
 let getClasse = async (idClasse) => {
@@ -173,5 +212,7 @@ module.exports = {
   getUsciteStato,
   getUsciteTimeStamp,
   getUsciteSummary,
+  getUltimaUscitaClasse,
+  getEndUscitaClasseAndata,
 };
 

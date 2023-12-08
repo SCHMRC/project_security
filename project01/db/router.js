@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router()
 const crud = require('./dml')
 const fetch = require('node-fetch')
+const util = require('./../util')
+require('dotenv').config();
+
 
 
 const middleware = (req,res,next) => {
@@ -18,6 +21,7 @@ const middleware = (req,res,next) => {
     req.idBagno = req.body['idBagno'];
     next();
 }
+
 
 
 router.post('/class',middleware,(req,res)=>{
@@ -45,12 +49,19 @@ router.post('/wc-local',middleware,(req,res)=>{
     
 })
 
-router.post('/exit',middleware,(req,res)=>{
+router.post('/exit', middleware, (req, res) => {
     crud.createUscita(req.idClasseFK,req.timerEndClass,req.statoClass)
-        .then((res)=>{
-            res.status(200).header(res).json(res);
+        .then((result) => {
+          console.log("**** ok  ******");
+            const ioInstance = req.io; // o app.locals.io
+            let data = {
+                msg: "Success",
+                state: 200
+            }
+            ioInstance.emit("message", data);
+          res.status(200).header(result).json(result);
         })
-        .catch((err)=>res.status(500).send(err))   
+        .catch((err)=>res.status(500).send(err))
 })
 
 router.post('/exit-wc', middleware, (req, res) => {
@@ -58,26 +69,23 @@ router.post('/exit-wc', middleware, (req, res) => {
         crud.createUscita(req.idClasseFK, req.timerEndClass, req.statoClass)
             .then(() => {
                 console.log("createUscita completato");
-                return crud.createUscitaBagno(req.idClasseFK, req.timerEndBath, req.statoBath, req.idLocaleFK);
+                let timeStamp = util.getCustomDate()
+                return crud.createUscitaBagno(req.idClasseFK,timeStamp,req.timerEndBath, req.statoBath, req.idLocaleFK);
             })
             .then(() => {
                 console.log("createUscitaBagno completato");
                 let init = {
                     method: 'GET'
                 };
-                return fetch(`http://192.168.1.168:3000/receive-rfid?idClasseFK=${req.idClasseFK}`, init);
+                return fetch(`${process.env.API}/receive-rfid?idClasseFK=${req.idClasseFK}`, init);
             })
             .then(response => {
                 console.log("fetch completato");
-                //if (res.status === 200) {
+                if (response.status === 200) {
                     res.status(200).json({"Content":"Success"}); // Estrai il corpo della risposta in formato JSON
-                //} else {
-//throw new Error(`Errore durante la richiesta: ${res.status}`);
-               // }
-            })
-            .then(data => {
-                console.log("Successo: ", "ok");
-                res.status(200).json(data); // Invia la risposta al client
+                } else {
+                    throw new Error(`Errore durante la richiesta: ${res.status}`);
+                }
             })
             .catch(err => {
                 res.status(500).send("Errore!!!!!"); // Gestisci gli errori
@@ -85,8 +93,6 @@ router.post('/exit-wc', middleware, (req, res) => {
             });
         }
     });
-
-
 
 
 
